@@ -11,40 +11,85 @@ st.set_page_config(page_title="Sistema de Gestão CS", layout="wide")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_NAME = os.path.join(BASE_DIR, "carteira_cs.db")
-
 def init_db():
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-   c.execute('''CREATE TABLE IF NOT EXISTS clientes (
-    id INTEGER PRIMARY KEY,
-    nome TEXT,
-    mrr REAL,
-    faturamento REAL,
-    media_pedidos REAL,
-    responsavel TEXT,
-    health TEXT,
-    nivel TEXT,
-    data_ultimo_touch TEXT,
-    status_cliente TEXT
-)''')
+
+    c.execute('''CREATE TABLE IF NOT EXISTS clientes (
+        id INTEGER PRIMARY KEY,
+        nome TEXT,
+        mrr REAL,
+        faturamento REAL,
+        media_pedidos REAL,
+        responsavel TEXT,
+        health TEXT,
+        nivel TEXT,
+        data_ultimo_touch TEXT,
+        status_cliente TEXT
+    )''')
+
     c.execute('''CREATE TABLE IF NOT EXISTS acompanhamentos (
-                    id INTEGER PRIMARY KEY, cliente_id INTEGER, data TEXT, tipo TEXT, avaliacao TEXT, observacao TEXT)''')
+        id INTEGER PRIMARY KEY,
+        cliente_id INTEGER,
+        data TEXT,
+        tipo TEXT,
+        avaliacao TEXT,
+        observacao TEXT
+    )''')
+
     c.execute('''CREATE TABLE IF NOT EXISTS atendimentos (
-                    id INTEGER PRIMARY KEY, cliente_id INTEGER, data TEXT, tipo TEXT, 
-                    modulo TEXT, descricao TEXT, status TEXT, solucao TEXT, data_solucao TEXT)''')
+        id INTEGER PRIMARY KEY,
+        cliente_id INTEGER,
+        data TEXT,
+        tipo TEXT,
+        modulo TEXT,
+        descricao TEXT,
+        status TEXT,
+        solucao TEXT,
+        data_solucao TEXT
+    )''')
+
     c.execute('''CREATE TABLE IF NOT EXISTS anotacoes (
-                    id INTEGER PRIMARY KEY, cliente_id INTEGER, texto TEXT, data TEXT, status TEXT)''')
+        id INTEGER PRIMARY KEY,
+        cliente_id INTEGER,
+        texto TEXT,
+        data TEXT,
+        status TEXT
+    )''')
+
     c.execute('''CREATE TABLE IF NOT EXISTS addons (
-                    id INTEGER PRIMARY KEY, cliente_id INTEGER, addon TEXT, valor REAL, status TEXT)''')
+        id INTEGER PRIMARY KEY,
+        cliente_id INTEGER,
+        addon TEXT,
+        valor REAL,
+        status TEXT
+    )''')
+
     c.execute('''CREATE TABLE IF NOT EXISTS oportunidades (
-                    id INTEGER PRIMARY KEY, cliente_id INTEGER, tipo TEXT, valor REAL, probabilidade INTEGER, status TEXT, previsao TEXT)''')
+        id INTEGER PRIMARY KEY,
+        cliente_id INTEGER,
+        tipo TEXT,
+        valor REAL,
+        probabilidade INTEGER,
+        status TEXT,
+        previsao TEXT
+    )''')
+
     c.execute('''CREATE TABLE IF NOT EXISTS tarefas (
-                    id INTEGER PRIMARY KEY, cliente_id INTEGER, descricao TEXT, tipo TEXT, data TEXT, status TEXT, responsavel TEXT)''')
+        id INTEGER PRIMARY KEY,
+        cliente_id INTEGER,
+        descricao TEXT,
+        tipo TEXT,
+        data TEXT,
+        status TEXT,
+        responsavel TEXT
+    )''')
+
     conn.commit()
     conn.close()
 
-init_db()
 
+init_db()
 @contextlib.contextmanager
 def get_db_connection():
     conn = sqlite3.connect(DB_NAME)
