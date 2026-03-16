@@ -15,9 +15,18 @@ DB_NAME = os.path.join(BASE_DIR, "carteira_cs.db")
 def init_db():
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS clientes (
-                    id INTEGER PRIMARY KEY, nome TEXT, mrr REAL, faturamento REAL, 
-                    media_pedidos REAL, responsavel TEXT, health TEXT, nivel TEXT, dias_sem_touch INTEGER, status_cliente TEXT)''')
+   c.execute('''CREATE TABLE IF NOT EXISTS clientes (
+    id INTEGER PRIMARY KEY,
+    nome TEXT,
+    mrr REAL,
+    faturamento REAL,
+    media_pedidos REAL,
+    responsavel TEXT,
+    health TEXT,
+    nivel TEXT,
+    data_ultimo_touch TEXT,
+    status_cliente TEXT
+)''')
     c.execute('''CREATE TABLE IF NOT EXISTS acompanhamentos (
                     id INTEGER PRIMARY KEY, cliente_id INTEGER, data TEXT, tipo TEXT, avaliacao TEXT, observacao TEXT)''')
     c.execute('''CREATE TABLE IF NOT EXISTS atendimentos (
@@ -59,6 +68,15 @@ def calcular_sla(nivel):
     elif nivel == 'MEDIUM': return 17
     elif nivel == 'LOW': return 25
     return 30
+
+def calcular_dias_sem_touch(data_touch):
+    if not data_touch:
+        return 0
+    try:
+        ultima = datetime.strptime(data_touch, "%Y-%m-%d")
+        return (datetime.now() - ultima).days
+    except:
+        return 0
 
 def formata_data_br(df, colunas):
     for col in colunas:
@@ -116,6 +134,9 @@ with st.sidebar:
     )
 
 df_clientes = load_data("SELECT * FROM clientes")
+if not df_clientes.empty and "data_ultimo_touch" in df_clientes.columns:
+    df_clientes["dias_sem_touch"] = df_clientes["data_ultimo_touch"].apply(calcular_dias_sem_touch)
+
 lista_clientes = df_clientes['nome'].tolist() if not df_clientes.empty else []
 dict_clientes = dict(zip(df_clientes.nome, df_clientes.id)) if not df_clientes.empty else {}
 
@@ -197,7 +218,7 @@ elif menu == "Clientes":
             
             if st.form_submit_button("Salvar Registro"):
                 if nome and responsavel:
-                    run_query('''INSERT INTO clientes (nome, mrr, faturamento, media_pedidos, responsavel, health, nivel, dias_sem_touch, status_cliente)
+                    run_query('''INSERT INTO clientes (nome, mrr, faturamento, media_pedidos, responsavel, health, nivel, dias_sem_touch,datetime.now().strftime("%Y-%m-%d"), status_cliente)
                                  VALUES (?,?,?,?,?,?,?,?,?)''', (nome, mrr, faturamento, media_pedidos, responsavel, health, nivel, dias, status_cli))
                     st.success("Cliente cadastrado com sucesso."); st.rerun()
                 else: st.error("Os campos Nome e Key User são obrigatórios.")
@@ -331,7 +352,10 @@ elif menu in ["Atendimentos", "Acompanhamentos", "Anotações", "Addons", "Oport
                     data_solucao = st.date_input("Data da Solução", format="DD/MM/YYYY")
                     if st.form_submit_button("Salvar Registro"):
                         run_query("INSERT INTO atendimentos (cliente_id, data, tipo, modulo, descricao, status, solucao, data_solucao) VALUES (?,?,?,?,?,?,?,?)", (cli_id, data, tipo, mod, desc, status, solucao, data_solucao))
-                        run_query("UPDATE clientes SET dias_sem_touch = 0 WHERE id = ?", (cli_id,))
+                        run_query(
+    "UPDATE clientes SET data_ultimo_touch = ? WHERE id = ?",
+    (datetime.now().strftime("%Y-%m-%d"), cli_id)
+)
                         st.success("Salvo com sucesso!"); st.rerun()
 
                 elif modulo == "Acompanhamentos":
