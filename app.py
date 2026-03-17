@@ -147,7 +147,7 @@ if menu == "Dashboard":
                                  color='nivel', color_discrete_map={'HIGH++':'#6610f2', 'HIGH':'#007bff', 'MEDIUM':'#17a2b8', 'LOW':'#6c757d'})
             fig_bar_mrr.update_traces(hovertemplate='<b>Nível:</b> %{x}<br><b>MRR:</b> R$ %{y:,.2f}<extra></extra>')
             fig_bar_mrr.update_layout(showlegend=False, plot_bgcolor='rgba(0,0,0,0)', xaxis=dict(fixedrange=True), yaxis=dict(fixedrange=True), dragmode=False, hoverlabel=HOVER_STYLE)
-            st.plotly_chart(fig_bar_mrr, use_container_width=True, config=PLOTLY_CONFIG)
+            st.plotly_chart(fig_bar_mrr, width='stretch', config=PLOTLY_CONFIG)
 
         with col_graf2:
             df_sla_nivel = df_clientes.groupby(['nivel', 'Status SLA']).size().reset_index(name='Qtd')
@@ -155,7 +155,7 @@ if menu == "Dashboard":
                                  title='Aderência ao SLA por Nível', color_discrete_map={'Em dia': '#28a745', 'Atrasado': '#dc3545'})
             fig_bar_sla.update_traces(hovertemplate='<b>Nível:</b> %{y}<br><b>Status:</b> %{data.name}<br><b>Quantidade:</b> %{x} cliente(s)<extra></extra>')
             fig_bar_sla.update_layout(plot_bgcolor='rgba(0,0,0,0)', xaxis=dict(fixedrange=True), yaxis=dict(fixedrange=True), dragmode=False, hoverlabel=HOVER_STYLE)
-            st.plotly_chart(fig_bar_sla, use_container_width=True, config=PLOTLY_CONFIG)
+            st.plotly_chart(fig_bar_sla, width='stretch', config=PLOTLY_CONFIG)
 
         col_graf3, col_graf4 = st.columns(2)
         with col_graf3:
@@ -163,14 +163,14 @@ if menu == "Dashboard":
                                color='health', color_discrete_map={'Saudável': '#28a745', 'Atenção': '#ffc107', 'Risco': '#dc3545'})
             fig_saude.update_traces(hovertemplate='<b>Status:</b> %{label}<br><b>Quantidade:</b> %{value} cliente(s)<br><b>Proporção:</b> %{percent}<extra></extra>')
             fig_saude.update_layout(dragmode=False, hoverlabel=HOVER_STYLE)
-            st.plotly_chart(fig_saude, use_container_width=True, config=PLOTLY_CONFIG)
+            st.plotly_chart(fig_saude, width='stretch', config=PLOTLY_CONFIG)
             
         with col_graf4:
             fig_status = px.pie(df_clientes, values='mrr', names='status_cliente', title='MRR: Em Implantação vs Em Uso',
                                 hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel)
             fig_status.update_traces(hovertemplate='<b>Status:</b> %{label}<br><b>MRR:</b> R$ %{value:,.2f}<br><b>Proporção:</b> %{percent}<extra></extra>')
             fig_status.update_layout(dragmode=False, hoverlabel=HOVER_STYLE)
-            st.plotly_chart(fig_status, use_container_width=True, config=PLOTLY_CONFIG)
+            st.plotly_chart(fig_status, width='stretch', config=PLOTLY_CONFIG)
 
 elif menu == "Clientes":
     st.title("Gestão de Clientes")
@@ -182,7 +182,7 @@ elif menu == "Clientes":
         
         altura_dinamica = (len(df_exibicao) * 35) + 43 if not df_exibicao.empty else 200
         
-        st.dataframe(df_exibicao, use_container_width=True, hide_index=True, height=altura_dinamica)
+        st.dataframe(df_exibicao, width='stretch', hide_index=True, height=altura_dinamica)
 
     with tab_add:
         with st.form("form_novo_cliente", clear_on_submit=True):
@@ -274,11 +274,11 @@ elif menu == "Cliente 360":
                 st.write("Nenhum registro de acompanhamento encontrado.")
             
         with tab_atend:
-            st.dataframe(formata_data_br(load_data("SELECT data, tipo, modulo, descricao, status, solucao, data_solucao FROM atendimentos WHERE cliente_id=?", (cli_id,)), ['data', 'data_solucao']).rename(columns=MAPA_COLUNAS), use_container_width=True, hide_index=True)
-        with tab2: st.dataframe(formata_data_br(load_data("SELECT tipo, valor, probabilidade, status, previsao FROM oportunidades WHERE cliente_id=?", (cli_id,)), ['previsao']).rename(columns=MAPA_COLUNAS), use_container_width=True, hide_index=True)
-        with tab3: st.dataframe(formata_data_br(load_data("SELECT descricao, tipo, data, status, responsavel FROM tarefas WHERE cliente_id=?", (cli_id,)), ['data']).rename(columns=MAPA_COLUNAS), use_container_width=True, hide_index=True)
-        with tab4: st.dataframe(formata_data_br(load_data("SELECT data, status, texto FROM anotacoes WHERE cliente_id=?", (cli_id,)), ['data']).rename(columns=MAPA_COLUNAS), use_container_width=True, hide_index=True)
-        with tab5: st.dataframe(load_data("SELECT addon, valor, status FROM addons WHERE cliente_id=?", (cli_id,)).rename(columns=MAPA_COLUNAS), use_container_width=True, hide_index=True)
+            st.dataframe(formata_data_br(load_data("SELECT data, tipo, modulo, descricao, status, solucao, data_solucao FROM atendimentos WHERE cliente_id=?", (cli_id,)), ['data', 'data_solucao']).rename(columns=MAPA_COLUNAS), width='stretch', hide_index=True)
+        with tab2: st.dataframe(formata_data_br(load_data("SELECT tipo, valor, probabilidade, status, previsao FROM oportunidades WHERE cliente_id=?", (cli_id,)), ['previsao']).rename(columns=MAPA_COLUNAS), width='stretch', hide_index=True)
+        with tab3: st.dataframe(formata_data_br(load_data("SELECT descricao, tipo, data, status, responsavel FROM tarefas WHERE cliente_id=?", (cli_id,)), ['data']).rename(columns=MAPA_COLUNAS), width='stretch', hide_index=True)
+        with tab4: st.dataframe(formata_data_br(load_data("SELECT data, status, texto FROM anotacoes WHERE cliente_id=?", (cli_id,)), ['data']).rename(columns=MAPA_COLUNAS), width='stretch', hide_index=True)
+        with tab5: st.dataframe(load_data("SELECT addon, valor, status FROM addons WHERE cliente_id=?", (cli_id,)).rename(columns=MAPA_COLUNAS), width='stretch', hide_index=True)
 
 elif menu == "Cronograma SLA":
     st.title("Cronograma de Acompanhamentos")
@@ -292,7 +292,7 @@ elif menu == "Cronograma SLA":
         df_cron = df_cron.sort_values(by='Dias Restantes', ascending=True)
         
         df_exibicao = df_cron[['Status', 'nome', 'responsavel', 'nivel', 'status_cliente', 'dias_sem_touch', 'Dias Restantes']].rename(columns=MAPA_COLUNAS)
-        st.dataframe(df_exibicao, use_container_width=True, hide_index=True)
+        st.dataframe(df_exibicao, width='stretch', hide_index=True)
     else:
         st.info("Sistema sem dados. Por favor, cadastre clientes.")
 
@@ -309,7 +309,7 @@ elif menu in ["Atendimentos", "Acompanhamentos", "Anotações", "Addons", "Oport
         df_mod_view = load_data(f"SELECT c.nome as Cliente, t.* FROM {tabela_db} t JOIN clientes c ON t.cliente_id = c.id ORDER BY t.id DESC").drop(columns=['cliente_id', 'id'])
         if not df_mod_view.empty:
             colunas_data = ['data', 'previsao', 'data_solucao']
-            st.dataframe(formata_data_br(df_mod_view, [c for c in colunas_data if c in df_mod_view.columns]).rename(columns=MAPA_COLUNAS), use_container_width=True, hide_index=True)
+            st.dataframe(formata_data_br(df_mod_view, [c for c in colunas_data if c in df_mod_view.columns]).rename(columns=MAPA_COLUNAS), width='stretch', hide_index=True)
         else:
             st.info("Nenhum registro encontrado.")
 
@@ -452,21 +452,21 @@ elif menu == "Relatórios":
         st.subheader("Base de Clientes")
         if not df_clientes.empty:
             csv_cli = df_clientes.drop(columns=['id']).to_csv(index=False).encode('utf-8')
-            st.download_button("Exportar Clientes (CSV)", csv_cli, 'clientes.csv', 'text/csv', type="primary", use_container_width=True)
+            st.download_button("Exportar Clientes (CSV)", csv_cli, 'clientes.csv', 'text/csv', type="primary", width='stretch')
 
     with col2:
         st.subheader("Atendimentos")
         df_atend_rel = load_data("SELECT c.nome as Cliente, a.data, a.tipo, a.modulo, a.descricao, a.status, a.solucao, a.data_solucao FROM atendimentos a JOIN clientes c ON a.cliente_id = c.id ORDER BY a.data DESC")
         if not df_atend_rel.empty:
             csv_atend = formata_data_br(df_atend_rel, ['data', 'data_solucao']).to_csv(index=False).encode('utf-8')
-            st.download_button("Exportar Atendimentos", csv_atend, 'atendimentos.csv', 'text/csv', type="primary", use_container_width=True)
+            st.download_button("Exportar Atendimentos", csv_atend, 'atendimentos.csv', 'text/csv', type="primary", width='stretch')
 
     with col3:
         st.subheader("Acompanhamentos")
         df_acomp_rel = load_data("SELECT c.nome as Cliente, a.data, a.tipo, a.avaliacao, a.observacao FROM acompanhamentos a JOIN clientes c ON a.cliente_id = c.id ORDER BY a.data DESC")
         if not df_acomp_rel.empty:
             csv_acomp = formata_data_br(df_acomp_rel, ['data']).to_csv(index=False).encode('utf-8')
-            st.download_button("Exportar Acompanhamentos", csv_acomp, 'acompanhamentos.csv', 'text/csv', type="primary", use_container_width=True)
+            st.download_button("Exportar Acompanhamentos", csv_acomp, 'acompanhamentos.csv', 'text/csv', type="primary", width='stretch')
             
     st.markdown("<br>", unsafe_allow_html=True)
     col4, col5, col6 = st.columns(3)
@@ -476,23 +476,23 @@ elif menu == "Relatórios":
         df_opp_rel = load_data("SELECT c.nome as Cliente, o.tipo, o.valor, o.probabilidade, o.status, o.previsao FROM oportunidades o JOIN clientes c ON o.cliente_id = c.id ORDER BY o.id DESC")
         if not df_opp_rel.empty:
             csv_opp = formata_data_br(df_opp_rel, ['previsao']).to_csv(index=False).encode('utf-8')
-            st.download_button("Exportar Oportunidades", csv_opp, 'oportunidades.csv', 'text/csv', type="primary", use_container_width=True)
+            st.download_button("Exportar Oportunidades", csv_opp, 'oportunidades.csv', 'text/csv', type="primary", width='stretch')
 
     with col5:
         st.subheader("Tarefas")
         df_tar_rel = load_data("SELECT c.nome as Cliente, t.descricao, t.tipo, t.data, t.status, t.responsavel FROM tarefas t JOIN clientes c ON t.cliente_id = c.id ORDER BY t.data DESC")
         if not df_tar_rel.empty:
             csv_tar = formata_data_br(df_tar_rel, ['data']).to_csv(index=False).encode('utf-8')
-            st.download_button("Exportar Tarefas", csv_tar, 'tarefas.csv', 'text/csv', type="primary", use_container_width=True)
+            st.download_button("Exportar Tarefas", csv_tar, 'tarefas.csv', 'text/csv', type="primary", width='stretch')
 
     with col6:
         st.subheader("Anotações e Addons")
         df_nota_rel = load_data("SELECT c.nome as Cliente, a.texto, a.data, a.status FROM anotacoes a JOIN clientes c ON a.cliente_id = c.id ORDER BY a.id DESC")
         if not df_nota_rel.empty:
             csv_nota = formata_data_br(df_nota_rel, ['data']).to_csv(index=False).encode('utf-8')
-            st.download_button("Exportar Anotações", csv_nota, 'anotacoes.csv', 'text/csv', type="primary", use_container_width=True)
+            st.download_button("Exportar Anotações", csv_nota, 'anotacoes.csv', 'text/csv', type="primary", width='stretch')
         
         df_add_rel = load_data("SELECT c.nome as Cliente, a.addon, a.valor, a.status FROM addons a JOIN clientes c ON a.cliente_id = c.id ORDER BY a.id DESC")
         if not df_add_rel.empty:
             csv_add = df_add_rel.to_csv(index=False).encode('utf-8')
-            st.download_button("Exportar Addons", csv_add, 'addons.csv', 'text/csv', type="primary", use_container_width=True)
+            st.download_button("Exportar Addons", csv_add, 'addons.csv', 'text/csv', type="primary", width='stretch')
